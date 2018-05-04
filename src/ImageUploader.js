@@ -4,23 +4,27 @@ import {Field, reduxForm} from 'redux-form';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-const FileInput = ({ input, label, meta: { touched, error } }) => {
-    const handleChange = e => {
-        input.onChange(e.target.files[0]);
-    };
-    return (
-        <div>
-            <label>{label}</label>
-            <div className="async-validating">
-                <input {...input} type="file" value={""} onChange={handleChange} />
-                {touched && error && <span>{error}</span>}
+import {uploadFile} from './actions';
+import {asyncValidate} from './asyncValidate';
+
+const FileInput = ({input, label, meta: {asyncValidating, touched, error}}) => {
+        const handleChange = e => {
+            input.onChange(e.target.files[0]);
+        };
+        return (
+            <div>
+                <label>{label}</label>
+                <div className={asyncValidating ? 'async-validating' : ''}>
+                    < input {...input} type="file" value={""} onChange={handleChange}/>
+                    {touched && error && <span>{error}</span>}
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    }
+;
 
 const ImageUploaderForm = props => {
-    const { uploadFile } = props;
+    const {uploadFile} = props;
     return (
         <form>
             <Field
@@ -34,33 +38,13 @@ const ImageUploaderForm = props => {
     );
 };
 
-function uploadFile(file) {
-    console.log("upload file external");
-    return dispatch => {
-        console.log("inner uploadFile");
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const img = new Image();
-            img.onload = function () {
-                const width = this.width;
-                const height = this.height;
-                console.log(`Image dimensions: ${width} X ${height}`);
-
-                // dispatch(startAsyncValidation("asyncValidation"));
-            };
-            img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-        console.log("READER READ FILE");
-    };
-}
 
 const mapDispatchToProps = dispatch =>
-    bindActionCreators({ uploadFile }, dispatch);
+    bindActionCreators({uploadFile}, dispatch);
 const ImageUploaderComponent = reduxForm({
-    form: "form" // a unique identifier for this form
-    // asyncValidate,
-    // asyncBlurFields: ["fileInput"]
+    form: "form", // a unique identifier for this form
+    asyncValidate,
+    asyncChangeFields: ["fileInput"]
 })(ImageUploaderForm);
 
 export default connect(null, mapDispatchToProps)(ImageUploaderComponent);
