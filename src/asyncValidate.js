@@ -5,8 +5,8 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const EXPECTED_IMAGE_WIDTH = 1260;
 const EXPECTED_IMAGE_HEIGHT = 750;
 
-const validateImageDimensions = (file) => {
-    console.log("inner uploadFile");
+const validateImageDimensions = (resolve, reject, file) => {
+    let errors = {};
     const reader = new FileReader();
     reader.onloadend = () => {
         const img = new Image();
@@ -15,12 +15,13 @@ const validateImageDimensions = (file) => {
             const height = this.height;
             console.log(`Image dimensions: ${width} X ${height}`);
             if (width !== EXPECTED_IMAGE_WIDTH || height !== EXPECTED_IMAGE_HEIGHT) {
-
-                let errors = {errors: {fileInput: 'Invalid image dimensions'}};
-                throw new SubmissionError(errors);
-                // return errors;
+                errors['fileInput'] = 'Invalid image dimensions';
             }
-            // dispatch(startAsyncValidation("asyncValidation"));
+            if (errors) {
+                reject(errors);
+            } else {
+                resolve(errors);
+            }
         };
         img.src = reader.result;
     };
@@ -34,16 +35,17 @@ export const asyncValidateDimensions = (values) => {
     })
 };
 
-export const asyncValidate = (values, dispatch) => {
-    let errors = {};
-    errors['fileInput'] = 'missing';
-    return new Promise((resolve, reject) => {
-        if (errors) {
-            reject(errors);
-        } else {
-            resolve();
-        }
-    });
+export const asyncValidate = (values) => {
+    return new Promise((resolve, reject) => validateImageDimensions(resolve, reject, values.fileInput));
+    // let errors = {};
+    // errors['fileInput'] = 'missing';
+    // return new Promise((resolve, reject) => {
+    //     if (errors) {
+    //         reject(errors);
+    //     } else {
+    //         resolve();
+    //     }
+    // });
     // return sleep(1000).then(() => {
     //     const image = values.fileInput;
     //     validateImageDimensions(image);
