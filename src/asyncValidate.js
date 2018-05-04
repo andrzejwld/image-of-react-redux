@@ -1,41 +1,79 @@
 import {SubmissionError} from 'redux-form';
+import loadImage from 'image-promise';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const EXPECTED_IMAGE_WIDTH = 1260;
-const EXPECTED_IMAGE_HEIGHT = 750;
+export const EXPECTED_IMAGE_WIDTH = 2250;
+export const EXPECTED_IMAGE_HEIGHT = 1500;
+
+const readFile = (file) => {
+    let reader = new global.FileReader();
+    return new Promise((resolve, reject) => {
+        reader.onloadend = (event) => {
+            //console.log('EVENT IS ', event);
+            file.data = event.target.result;
+            //console.log(file.data);
+            resolve(file.data);
+        };
+
+        reader.onerror = () => {
+            return reject(this);
+        };
+
+        if (/^image/.test(file.type)) {
+            reader.readAsDataURL(file);
+        } else {
+            reader.readAsText(file);
+        }
+    })
+};
 
 const validateImageDimensions = (resolve, reject, file) => {
-    let errors = {};
+    let higherErrors = {};
     const reader = new FileReader();
+
     reader.onloadend = () => {
         const img = new Image();
         img.onload = function () {
             const width = this.width;
             const height = this.height;
-            console.log(`Image dimensions: ${width} X ${height}`);
             if (width !== EXPECTED_IMAGE_WIDTH || height !== EXPECTED_IMAGE_HEIGHT) {
-                errors['fileInput'] = 'Invalid image dimensions';
+                higherErrors['fileInput'] = 'Invalid image dimensions';
             }
-            if (errors) {
-                reject(errors);
+            if (higherErrors) {
+                reject(higherErrors);
             } else {
-                resolve(errors);
+                return resolve(higherErrors);
             }
         };
-        img.src = reader.result;
+        // loadImage(reader.result).then(
+        //     function (image) {
+        //         console.log("image loaded!!!", image.width, image.height);
+        //     }
+        // );
+        // img.src = reader.result;
     };
-    reader.readAsDataURL(file);
-    console.log("READER READ FILE");
+    //reader.readAsDataURL(file);
+    return readFile(file).then((imgSrc) => {
+        return loadImage(imgSrc)
+        // console.log("img src is ", imgSrc);
+    }).then((image) => {
+            return new Promise(() => {
+                let errors = {};
+                if (image.width !== EXPECTED_IMAGE_WIDTH || image.height !== EXPECTED_IMAGE_HEIGHT) {
+                    errors['fileInput'] = 'Napraw rozmiar!!!';
+                    reject(errors);
+                }
+                return resolve();
+                //console.log("image loaded!!!", image.width, image.height);
+            })
+        }
+    );
 };
 
-export const asyncValidateDimensions = (values) => {
-    return new Promise((resolve, reject) => {
-        reject({fileInput: 'invalid dimensions'})
-    })
-};
 
 export const asyncValidate = (values) => {
+    // return validateImageDimensions(values.fileInput).then()
     return new Promise((resolve, reject) => validateImageDimensions(resolve, reject, values.fileInput));
     // let errors = {};
     // errors['fileInput'] = 'missing';
