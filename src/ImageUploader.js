@@ -1,10 +1,8 @@
-import React from "react";
-import { Field, reduxForm } from "redux-form";
+import React from 'react';
+import {Field, reduxForm} from 'redux-form';
 
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import asyncValidate from "./asyncValidate";
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
 const FileInput = ({ input, label, meta: { touched, error } }) => {
     const handleChange = e => {
