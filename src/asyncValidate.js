@@ -37,7 +37,7 @@ const checkImageDimensions = (resolve, reject, img) => {
         let errors = {};
         if (img.width !== EXPECTED_IMAGE_WIDTH || img.height !== EXPECTED_IMAGE_HEIGHT) {
             errors['fileInput'] = 'Invalid dimensions';
-            reject(errors);
+            return reject(errors);
         }
         return resolve();
     })
