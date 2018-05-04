@@ -1,1 +1,0 @@
-# image-of-react-redux
