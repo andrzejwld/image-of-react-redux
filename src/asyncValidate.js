@@ -1,12 +1,10 @@
 import loadImage from 'image-promise';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 export const EXPECTED_IMAGE_WIDTH = 2250;
 export const EXPECTED_IMAGE_HEIGHT = 1500;
 
 const readFile = (file) => {
-    let reader = new global.FileReader();
+    const reader = new FileReader();
     return new Promise((resolve, reject) => {
         reader.onloadend = (event) => {
             file.data = event.target.result;
