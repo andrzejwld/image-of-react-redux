@@ -30,20 +30,29 @@ const validateImageDimensions = (file) => {
 
 export const asyncValidateDimensions = (values) => {
     return new Promise((resolve, reject) => {
-        reject({ fileInput: 'invalid dimensions' })
+        reject({fileInput: 'invalid dimensions'})
     })
 };
 
 export const asyncValidate = (values, dispatch) => {
-    return sleep(1000).then(() => {
-        const image = values.fileInput;
-        validateImageDimensions(image);
-        // throw {fileINput: 'invalid'};
-        // dispatch()
-        // simulate server latency
-        //throw {fileInput: 'That username is taken'};
-        // console.log("async validating", values);
+    let errors = {};
+    errors['fileInput'] = 'missing';
+    return new Promise((resolve, reject) => {
+        if (errors) {
+            reject(errors);
+        } else {
+            resolve();
+        }
     });
+    // return sleep(1000).then(() => {
+    //     const image = values.fileInput;
+    //     validateImageDimensions(image);
+    //     // throw {fileINput: 'invalid'};
+    //     // dispatch()
+    //     // simulate server latency
+    //     //throw {fileInput: 'That username is taken'};
+    //     // console.log("async validating", values);
+    // });
 };
 
 
