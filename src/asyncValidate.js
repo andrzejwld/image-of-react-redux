@@ -6,11 +6,11 @@ const readFile = (file) => {
     return new Promise((resolve, reject) => {
         reader.onloadend = (event) => {
             file.data = event.target.result;
-            return resolve(file.data);
+            resolve(file.data);
         };
 
         reader.onerror = () => {
-            return reject(this);
+            reject(this);
         };
 
         reader.readAsDataURL(file);
@@ -21,11 +21,11 @@ const convertToImg = (src) => {
     const img = new Image();
     return new Promise((resolve, reject) => {
         img.onload = (event) => {
-            return resolve(event.target);
+            resolve(event.target);
         };
 
         img.onerror = () => {
-            return reject(this);
+            reject(this);
         };
 
         img.src = src;
@@ -37,9 +37,9 @@ const checkImageDimensions = (resolve, reject, img) => {
         let errors = {};
         if (img.width !== EXPECTED_IMAGE_WIDTH || img.height !== EXPECTED_IMAGE_HEIGHT) {
             errors['fileInput'] = 'Invalid dimensions';
-            return reject(errors);
+            reject(errors);
         }
-        return resolve();
+        resolve();
     })
 };
 

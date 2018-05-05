@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import store from './store';
 import ImageUploaderComponent from './ImageUploaderComponent';
 import {EXPECTED_IMAGE_HEIGHT, EXPECTED_IMAGE_WIDTH} from './asyncValidate';
+import {Values} from 'redux-form-website-template';
 
 const rootElement = document.getElementById("root");
 
@@ -21,6 +22,7 @@ ReactDOM.render(
                 </a>.
             </p>
             <ImageUploaderComponent/>
+            <Values form="form"/>
         </div>
     </Provider>,
     rootElement
